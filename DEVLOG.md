@@ -4,6 +4,11 @@
 
 当前 Beta 版与 Public 版的代码和功能保持一致。后续如果 Beta 版包含尚未公开的实验功能，将只记录在 Beta Devlog 中；经过验证并正式发布后，再同步到 Public Devlog。
 
+## To-Do List
+
+- [ ] 完成 Codex 语义排序的实现与稳定性验证。
+- [ ] 整理论文研究方向的输出格式和内容结构。
+
 ## Beta Devlog
 
 ### 2026-08-12
