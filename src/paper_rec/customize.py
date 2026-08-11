@@ -120,7 +120,10 @@ def _build_prompt(raw: dict[str, Any], papers_by_interest: dict[str, list[Paper]
     instruction = (
         "Rewrite the research interests from the seed papers. Return only a JSON object with an interests array. "
         "Each interest must contain id, label, description, include, exclude, limit, and weight. "
-        "Keep each limit at most 5, use concise English keyword phrases in include/exclude, and do not invent papers."
+        "Keep each limit at most 5, use concise English keyword phrases in include/exclude, and do not invent papers. "
+        "Return exactly one interest for each seed group. The output interest ids may be refined based on the "
+        "papers, but the number of output interests must equal the number of seed groups. Do not create "
+        "additional ids or split one seed group into multiple interests."
     )
     if raw.get("mode", "preserve") == "preserve":
         instruction += " Preserve existing interests when relevant and supplement them using the seed papers."
@@ -161,6 +164,40 @@ def _validate_interests(payload: object) -> list[dict[str, Any]]:
     return result
 
 
+def _normalize_interest_groups(
+    generated: list[dict[str, Any]], seed_interests: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Ensure generated interests have exactly the configured group count."""
+    expected_count = len(seed_interests)
+    if expected_count == 1:
+        # A single configured group is one research direction, even if Codex
+        # notices several subtopics among its papers.
+        merged = generated[0].copy()
+        # The single output id may be refined by Codex, but all papers remain
+        # in one configured research direction.
+        merged["id"] = generated[0]["id"]
+        merged["description"] = " ".join(
+            dict.fromkeys(item["description"].strip() for item in generated if item["description"].strip())
+        )
+        for key in ("include", "exclude"):
+            merged[key] = list(dict.fromkeys(
+                value.strip()
+                for item in generated
+                for value in item[key]
+                if value.strip()
+            ))
+        merged["limit"] = min(5, max(item["limit"] for item in generated))
+        merged["weight"] = max(item["weight"] for item in generated)
+        return [merged]
+
+    if len(generated) != expected_count:
+        raise ValueError(
+            "customizer must return exactly one interest per configured seed group "
+            f"(expected {expected_count}, got {len(generated)})"
+        )
+    return generated
+
+
 def customize_profile(input_dir: pathlib.Path, target: pathlib.Path, executable: str = "codex") -> pathlib.Path:
     raw, _ = _read_seed_config(input_dir)
     source = ArxivSource()
@@ -197,7 +234,9 @@ def customize_profile(input_dir: pathlib.Path, target: pathlib.Path, executable:
         raise RuntimeError(f"Codex CLI failed with exit code {error.returncode}: {detail}") from error
     except subprocess.TimeoutExpired as error:
         raise RuntimeError("Codex CLI timed out after 300 seconds") from error
-    generated = _validate_interests(_extract_json(result.stdout))
+    generated = _normalize_interest_groups(
+        _validate_interests(_extract_json(result.stdout)), raw["interests"]
+    )
     output = dict(existing_raw or {})
     output.update({key: raw[key] for key in ("id", "title", "language") if key in raw})
     if "id" not in output:

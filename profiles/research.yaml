@@ -1,47 +1,22 @@
 id: research
-title: research 相关主题：机器人数据合成与泛化、灵巧手与人形机器人控制、高效视觉语言动作模型
+title: research 相关主题：机器人空间智能与具身控制
 language: zh-CN
 interests:
-- id: robot_data_synthesis
-  label: 机器人数据合成与泛化
-  description: 从第一视角人类操作视频合成机器人训练数据，并提升跨视觉、场景、形态和任务变化的泛化能力
+- id: robotic_spatial_intelligence
+  label: 机器人空间智能与具身控制
+  description: 研究从人类第一视角数据合成机器人训练数据、形态可重构机器人、全身运动控制及高效视觉语言动作模型
   include:
   - robot data synthesis
-  - egocentric manipulation video
-  - action retargeting
-  - robot visual synthesis
-  - out-of-distribution generalization
-  exclude:
-  - medical imaging
-  - genomics
-  limit: 5
-  weight: 2
-- id: humanoid_dexterous_control
-  label: 灵巧手与人形机器人控制
-  description: 灵巧手、人形机器人、形态可重构平台以及面向全身运动和操作的统一控制与学习
-  include:
-  - dexterous hand
-  - humanoid robot
-  - morphology reconfiguration
-  - whole-body control
-  - locomotion manipulation
-  exclude:
-  - industrial robot arm
-  - medical robotics
-  limit: 5
-  weight: 2
-- id: vision_language_action
-  label: 高效视觉语言动作模型
-  description: 面向机器人操作的视觉语言动作模型、视觉语言交互、连续动作预测和实时低资源推理
-  include:
+  - morphology-reconfigurable robotics
+  - humanoid whole-body control
   - vision-language-action model
-  - robot manipulation
-  - visual-language interaction
-  - continuous action chunks
-  - real-time robot inference
+  - real-time robot control
   exclude:
-  - image captioning
+  - medical robotics
+  - industrial automation
+  - image classification
   - text-only language model
+  - genomics
   limit: 5
   weight: 2
 sources:
@@ -53,7 +28,7 @@ sources:
     - cs.RO
     - cs.GR
     hours: 72
-    max_results: 200
+    max_results: 300
 selection:
   recall_limit: 60
   minimum_score: 55

@@ -165,8 +165,10 @@ interests:
 
 `mode`：
 
-- `preserve`：保留原有 Profile 内容，并补充或调整 interests
+- `preserve`：保留原有 Profile 中的 interests，并根据当前样例论文增加或调整新的 interests
 - `rewrite`：根据样例论文重新生成 interests，但保留 sources、selection 和 delivery 配置
+
+在 `rewrite` 模式下，生成的 interest 数量与当前 seed 配置中的数量一致；在 `preserve` 模式下，旧 Profile 中未被新结果覆盖的 interests 会继续保留，因此最终数量可能多于当前 seed 配置数量。
 
 执行生成：
 

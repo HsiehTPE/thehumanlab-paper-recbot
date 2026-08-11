@@ -7,12 +7,17 @@
 ## To-Do List
 
 - [ ] 完成 Codex 语义排序的实现与稳定性验证。
-- [ ] 整理论文研究方向的输出格式和内容结构。
 
 ## Beta Devlog
 
 ### 2026-08-12
 
+- 完成研究方向配置与生成逻辑整理：
+  - `config.base.yaml` 保存公开默认配置，`config.local.yaml` 保存本地客制化配置。
+  - 支持直接在 YAML 的 `links` 字段中维护 arXiv 论文链接。
+  - 同一个 seed group 下的多篇论文会合并为一个 interest，不会被 Codex 任意拆分成多个 ID。
+  - `rewrite` 只生成当前 seed 配置对应的 interests。
+  - `preserve` 保留旧 `research.yaml` 中的 interests，并增加当前样例生成的新方向。
 - 当前 Beta 版与 Public 版保持一致。
 - 支持基于 arXiv 的论文抓取、召回、排序和日报生成。
 - 支持 PDF 解析作者机构、项目主页和代码仓库链接。

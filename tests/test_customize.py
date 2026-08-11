@@ -5,7 +5,7 @@ import pathlib
 import pytest
 
 from paper_rec.config import ConfigError
-from paper_rec.customize import _base_paper_id, _read_seed_config
+from paper_rec.customize import _base_paper_id, _normalize_interest_groups, _read_seed_config
 from paper_rec.pdf import PdfEnricher
 from paper_rec.sources.arxiv import ArxivSource
 
@@ -92,3 +92,33 @@ def test_local_seed_config_inherits_public_base(tmp_path: pathlib.Path) -> None:
     assert raw["mode"] == "rewrite"
     assert raw["max_papers_per_interest"] == 5
     assert raw["interests"][0]["id"] == "local"
+
+
+def test_customizer_merges_multiple_codex_interests_into_one_seed_group() -> None:
+    generated = [
+        {
+            "id": "subtopic_a",
+            "label": "Subtopic A",
+            "description": "First subtopic.",
+            "include": ["first"],
+            "exclude": [],
+            "limit": 3,
+            "weight": 1,
+        },
+        {
+            "id": "subtopic_b",
+            "label": "Subtopic B",
+            "description": "Second subtopic.",
+            "include": ["second", "first"],
+            "exclude": ["noise"],
+            "limit": 5,
+            "weight": 2,
+        },
+    ]
+
+    result = _normalize_interest_groups(generated, [{"id": "spatial_intelligence"}])
+
+    assert len(result) == 1
+    assert result[0]["id"] == "subtopic_a"
+    assert result[0]["include"] == ["first", "second"]
+    assert result[0]["exclude"] == ["noise"]
