@@ -1,0 +1,9 @@
+# Public default template. Keep personal settings in config.local.yaml.
+mode: preserve
+max_papers_per_interest: 5
+
+interests:
+  - id: spatial_intelligence
+    label: 3D vision and spatial intelligence
+    links:
+      - https://arxiv.org/abs/1706.03762

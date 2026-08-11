@@ -1,0 +1,2 @@
+"""Digest delivery adapters."""
+
