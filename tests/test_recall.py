@@ -42,3 +42,26 @@ def test_recall_matches_terms_and_honors_exclusions() -> None:
     assert candidates[0].section == "medical"
     assert candidates[0].score >= 55
 
+
+def test_recall_treats_hyphen_and_space_as_equivalent() -> None:
+    candidates = recall(
+        [paper("1", "Whole body control", "A humanoid robot controller.")],
+        Profile(
+            id="demo",
+            title="Demo",
+            language="en",
+            interests=(
+                InterestConfig(
+                    id="robotics",
+                    label="Robotics",
+                    description="Robotics",
+                    include=("whole-body control",),
+                ),
+            ),
+            arxiv=ArxivConfig(categories=("cs.RO",)),
+            selection=SelectionConfig(),
+            delivery=DeliveryConfig(),
+        ),
+    )
+
+    assert [candidate.paper.id for candidate in candidates] == ["1"]

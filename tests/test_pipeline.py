@@ -8,7 +8,7 @@ from paper_rec.pipeline import Pipeline
 
 
 class FakeSource:
-    def fetch(self, config):
+    def fetch(self, config, interests=()):
         return [
             Paper(
                 id="2608.00001v1",

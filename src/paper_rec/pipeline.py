@@ -27,7 +27,7 @@ class Pipeline:
         storage = Storage(self.app.state_dir / "paper-rec.sqlite3")
         storage.start_run(run_id, profile.id)
         try:
-            fetched = self.source.fetch(profile.arxiv)
+            fetched = self.source.fetch(profile.arxiv, profile.interests)
             candidates = recall(fetched, profile)
             ranker = CodexRanker() if profile.selection.ranker == "codex" else HeuristicRanker()
             ranked = ranker.rank(candidates, profile)

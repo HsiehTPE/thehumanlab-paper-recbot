@@ -11,12 +11,12 @@ interests:
   - humanoid whole-body control
   - vision-language-action model
   - real-time robot control
-  exclude:
-  - medical robotics
-  - industrial automation
-  - image classification
-  - text-only language model
-  - genomics
+  # exclude:
+  # - medical robotics
+  # - industrial automation
+  # - image classification
+  # - text-only language model
+  # - genomics
   limit: 5
   weight: 2
 sources:
@@ -27,10 +27,10 @@ sources:
     - eess.IV
     - cs.RO
     - cs.GR
-    hours: 72
-    max_results: 300
+    hours: 168
+    max_results: 100
 selection:
-  recall_limit: 60
+  recall_limit: 20
   minimum_score: 55
   max_items: 10
 delivery:

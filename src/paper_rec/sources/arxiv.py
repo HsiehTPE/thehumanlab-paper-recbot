@@ -9,7 +9,7 @@ import urllib.error
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 
-from paper_rec.config import ArxivConfig
+from paper_rec.config import ArxivConfig, InterestConfig
 from paper_rec.models import Paper
 
 ARXIV_API = "https://export.arxiv.org/api/query"
@@ -22,8 +22,16 @@ class ArxivSource:
         self.timeout = timeout
         self.retries = retries
 
-    def fetch(self, config: ArxivConfig) -> list[Paper]:
-        query = " OR ".join(f"cat:{category}" for category in config.categories)
+    def fetch(self, config: ArxivConfig, interests: tuple[InterestConfig, ...] = ()) -> list[Paper]:
+        category_query = " OR ".join(f"cat:{category}" for category in config.categories)
+        include_terms = tuple(
+            dict.fromkeys(term.strip() for interest in interests for term in interest.include if term.strip())
+        )
+        if include_terms:
+            keyword_query = " OR ".join(f'all:"{self._escape_query_term(term)}"' for term in include_terms)
+            query = f"({category_query}) AND ({keyword_query})"
+        else:
+            query = category_query
         parameters = urllib.parse.urlencode(
             {
                 "search_query": query,
@@ -37,6 +45,10 @@ class ArxivSource:
         cutoff = datetime.now(timezone.utc) - timedelta(hours=config.hours)
         papers = self._parse(payload)
         return [paper for paper in papers if datetime.fromisoformat(paper.published) >= cutoff]
+
+    @staticmethod
+    def _escape_query_term(term: str) -> str:
+        return term.replace("\\", "\\\\").replace('"', '\\"')
 
     def fetch_ids(self, paper_ids: list[str]) -> list[Paper]:
         if not paper_ids:

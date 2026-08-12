@@ -7,8 +7,10 @@ from paper_rec.models import Paper, RankedPaper
 
 
 def contains_term(text: str, term: str) -> bool:
-    pattern = re.escape(term.lower()).replace(r"\ ", r"\s+")
-    return re.search(rf"(?<![a-z0-9]){pattern}(?![a-z0-9])", text.lower()) is not None
+    normalized_text = re.sub(r"[-_]+", " ", text.lower())
+    normalized_term = re.sub(r"[-_]+", " ", term.lower())
+    pattern = re.escape(normalized_term).replace(r"\ ", r"\s+")
+    return re.search(rf"(?<![a-z0-9]){pattern}(?![a-z0-9])", normalized_text) is not None
 
 
 def score_interest(paper: Paper, interest: InterestConfig) -> tuple[int, tuple[str, ...]]:
@@ -42,4 +44,3 @@ def recall(papers: list[Paper], profile: Profile) -> list[RankedPaper]:
             candidates.append(best)
     candidates.sort(key=lambda item: (item.score, item.paper.published), reverse=True)
     return candidates[: profile.selection.recall_limit]
-
